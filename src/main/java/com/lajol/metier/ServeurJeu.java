@@ -29,6 +29,7 @@ public class ServeurJeu {
   public String getMotFromDictionnaire() throws IOException, ClassNotFoundException {
     Socket DictionnaireSocket = new Socket(InetAddress.getLocalHost(), 9002);
     String sentMot = (String)new ObjectInputStream(DictionnaireSocket.getInputStream()).readObject();
+    System.out.println(sentMot);
     DictionnaireSocket.close();
     return sentMot;
   }
@@ -42,15 +43,17 @@ public class ServeurJeu {
       hiddenMot.append('_');
     }
     this.progressMot = hiddenMot.toString();
+    System.out.println(progressMot);
     new ObjectOutputStream(this.socket.getOutputStream()).writeObject(progressMot);
   }
 
   public void startListening() throws IOException,ClassNotFoundException {
     this.socket = serverSocket.accept();
     String response = (String)new ObjectInputStream(this.socket.getInputStream()).readObject();
+    System.out.println(response);
     if (response.equals("?")) {
       //C'est un Middleware
-      new ObjectOutputStream(this.socket.getOutputStream()).writeObject(this.isGaming);
+      new ObjectOutputStream(this.socket.getOutputStream()).writeObject(!this.isGaming);
     } else {
       if(isGaming) {
         
