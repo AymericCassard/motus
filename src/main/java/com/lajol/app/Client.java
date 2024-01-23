@@ -30,23 +30,17 @@ public class Client {
             
             //ecoute pour le mot du serveur jeu
             ObjectInputStream inputStream = new ObjectInputStream(targetSocket.getInputStream());
-            String response = (String) inputStream.readObject();
+            String retour = (String) inputStream.readObject();
 
-            // WIN
-            if (response == "SUCCESS"){
-                ClientSocket.close();
-            }
             //suite
-            targetSocket.close();
-            targetSocket = null;
-            targetSocket = new Socket();
-
-            targetSocket.connect(target);
-            System.out.println(": "+ response);
-            ObjectOutputStream outputStream = new ObjectOutputStream(targetSocket.getOutputStream());
-            System.out.print("Devine le mot :");
-            outputStream.writeObject(ecrire.next());
-
+            while ( !(retour == "SUCCESS") || !(retour == "FAIL")) {
+                System.out.println(": " + retour);
+                ObjectOutputStream outputStream = new ObjectOutputStream(targetSocket.getOutputStream());
+                System.out.println("Devine le mot :");
+                outputStream.writeObject(ecrire.next());
+                retour = (String) inputStream.readObject();
+            }
+            System.out.println(": " + retour);
         } catch (IOException | ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
