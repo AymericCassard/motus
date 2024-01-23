@@ -1,4 +1,4 @@
-package org.example;
+package com.lajol.app;
 
 import java.io.*;
 import java.net.ServerSocket;
@@ -18,16 +18,15 @@ public class Dictionnaire {
             System.out.println("connexion établie");
 
             //intercepté msg du serveur jeu
-            BufferedReader inputMSG = new BufferedReader(new InputStreamReader(socketServeurJeu.getInputStream()));
-
+            //ObjectInputStream inputStream = new ObjectInputStream(socketServeurJeu.getInputStream());
             //envoyer msg au serveur jeu
-            PrintWriter output = new PrintWriter(socketServeurJeu.getOutputStream(), true);
+            ObjectOutputStream outputStream = new ObjectOutputStream(socketServeurJeu.getOutputStream());
 
             //recuperation du mots
             File FichierMots = new File("ListeMots.txt");
             String leMot = GetMot(FichierMots);
-
-            output.write(leMot);
+            System.out.println(leMot);
+            outputStream.writeObject(leMot);
             socketServeurJeu.close();
         } catch (IOException e) {
             throw new RuntimeException(e);

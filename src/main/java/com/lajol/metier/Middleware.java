@@ -12,7 +12,5 @@ public class Middleware {
   private ObjectInputStream input;
   private ObjectOutputStream output;
 
-  public Middleware {
-    
-  }
+
 }
