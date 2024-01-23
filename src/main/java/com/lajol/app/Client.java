@@ -26,17 +26,25 @@ public class Client {
             Socket targetSocket = new Socket();
 
             targetSocket.connect(target);
+            new ObjectOutputStream(targetSocket.getOutputStream()).writeObject("!");
+            
             //ecoute pour le mot du serveur jeu
             ObjectInputStream inputStream = new ObjectInputStream(targetSocket.getInputStream());
+            String response = (String) inputStream.readObject();
 
             // WIN
-            if ((String) inputStream.readObject() == "SUCCESS"){
+            if (response == "SUCCESS"){
                 ClientSocket.close();
             }
             //suite
-            System.out.println(": "+ inputStream.read());
+            targetSocket.close();
+            targetSocket = null;
+            targetSocket = new Socket();
+
+            targetSocket.connect(target);
+            System.out.println(": "+ response);
             ObjectOutputStream outputStream = new ObjectOutputStream(targetSocket.getOutputStream());
-            System.out.println("Devine le mot :");
+            System.out.print("Devine le mot :");
             outputStream.writeObject(ecrire.next());
 
         } catch (IOException | ClassNotFoundException e) {

@@ -14,7 +14,7 @@ public class ServeurJeu {
   private String motDictionnaire;
   private String progressMot;
   private int toursClient;
-  
+
   private ServerSocket serverSocket;
   private Socket socket;
   private ObjectInputStream input;
@@ -28,7 +28,7 @@ public class ServeurJeu {
 
   public String getMotFromDictionnaire() throws IOException, ClassNotFoundException {
     Socket DictionnaireSocket = new Socket(InetAddress.getLocalHost(), 9002);
-    String sentMot = (String)new ObjectInputStream(DictionnaireSocket.getInputStream()).readObject();
+    String sentMot = (String) new ObjectInputStream(DictionnaireSocket.getInputStream()).readObject();
     System.out.println(sentMot);
     DictionnaireSocket.close();
     return sentMot;
@@ -38,25 +38,53 @@ public class ServeurJeu {
     this.toursClient = 1;
     this.isGaming = true;
     this.motDictionnaire = getMotFromDictionnaire();
-    StringBuilder hiddenMot = new StringBuilder(motDictionnaire.charAt(0));
+    StringBuilder hiddenMot = new StringBuilder(motDictionnaire.charAt(0) + "");
+    System.out.println(hiddenMot);
     for (int i = 1; i < motDictionnaire.length(); i++) {
       hiddenMot.append('_');
     }
     this.progressMot = hiddenMot.toString();
     System.out.println(progressMot);
+    System.out.println(progressMot.length());
+    System.out.println(motDictionnaire.length());
     new ObjectOutputStream(this.socket.getOutputStream()).writeObject(progressMot);
   }
 
-  public void startListening() throws IOException,ClassNotFoundException {
+  public void processTour(String response) throws IOException, ClassNotFoundException {
+    if (toursClient < 7) {
+      if (!checkVictory(response)) {
+        StringBuilder hiddenMot = new StringBuilder(progressMot);
+        for (int i = 1; i < response.length(); i++) {
+          if (motDictionnaire.charAt(i) == response.charAt(i)) {
+            hiddenMot.setCharAt(i, motDictionnaire.charAt(i));
+          }
+        }
+        new ObjectOutputStream(this.socket.getOutputStream()).writeObject(hiddenMot.toString());
+        this.toursClient++;
+      } else {
+        new ObjectOutputStream(this.socket.getOutputStream()).writeObject("SUCCESS");
+      }
+    } else {
+      new ObjectOutputStream(this.socket.getOutputStream()).writeObject("FAIL");
+      //reset la condition startListening
+      this.isGaming = false;
+    }
+  }
+
+  public boolean checkVictory(String motClient) {
+    return motClient.equals(motDictionnaire);
+  }
+
+  public void startListening() throws IOException, ClassNotFoundException {
     this.socket = serverSocket.accept();
-    String response = (String)new ObjectInputStream(this.socket.getInputStream()).readObject();
+    String response = (String) new ObjectInputStream(this.socket.getInputStream()).readObject();
     System.out.println(response);
     if (response.equals("?")) {
-      //C'est un Middleware
+      // C'est un Middleware
       new ObjectOutputStream(this.socket.getOutputStream()).writeObject(!this.isGaming);
     } else {
-      if(isGaming) {
-        
+      if (isGaming) {
+        processTour(response);
       } else {
         startPartie();
       }
