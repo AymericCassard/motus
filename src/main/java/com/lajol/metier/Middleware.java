@@ -35,6 +35,7 @@ public class Middleware {
     int serveurJeuPort = 9005;
     for(int i = 0; i < 2; i++) {
       Socket serveurJeuSocket = new Socket(InetAddress.getLocalHost(), serveurJeuPort + i);
+      new ObjectOutputStream(serveurJeuSocket.getOutputStream()).writeObject("?");
       boolean available = (boolean)new ObjectInputStream(serveurJeuSocket.getInputStream()).readObject();
       serveurJeuSocket.close();
       if(available) {

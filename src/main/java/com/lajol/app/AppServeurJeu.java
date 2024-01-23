@@ -8,14 +8,16 @@ public class AppServeurJeu {
 
   public static void main(String[] args) {
 
-      ServeurJeu serveurJeu = null;
-      try {
-          serveurJeu = new ServeurJeu(9005);
-          System.out.println(serveurJeu.getMotFromDictionnaire());
-      } catch (IOException | ClassNotFoundException e) {
-          throw new RuntimeException(e);
+    ServeurJeu serveurJeu = null;
+    try {
+      serveurJeu = new ServeurJeu(9005);
+      while (true) {
+        serveurJeu.startListening();
       }
+    } catch (IOException | ClassNotFoundException e) {
+      throw new RuntimeException(e);
+    }
 
   }
-	
+
 }
